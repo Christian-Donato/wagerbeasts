@@ -1,127 +1,465 @@
-# XP Scaling System Plan
+# XP Scaling System – Full Technical Specification
 
-## 1. Vision & Goals
-- **Vision:** Dual-stage progression (1–35: evolution, 36–99: prestige).
-- **Goals:**
-  1. Provide a compelling mid-game progression through evolution based on mechanics and growth.
-  2. Maintain long-term grind with meaningful rewards past evolution.
-  3. Avoid potential pay-to-grind exploitation by balancing XP earnings to session time and engagement.
-  4. Ensure XP progression supports both casual and dedicated players.
+---
+
+## 1. Vision & Goals (Implementation Definition)
+
+### 1.1 System Purpose
+The XP system is designed to:
+- Drive **player retention** through short-term and long-term progression loops
+- Provide **consistent reward pacing** across all session lengths
+- Ensure **fairness** regardless of spending power
+- Encourage **multi-system engagement** (blackjack, feeding, missions, etc.)
+
+---
+
+### 1.2 Design Constraints
+- XP gain must scale with **time + engagement**, NOT purely chip volume
+- High spenders must NOT gain disproportionate XP vs active players
+- All XP systems must be:
+  - Deterministic (no hidden randomness unless explicitly stated)
+  - Configurable via backend values
+  - Trackable via telemetry
+
+---
+
+### 1.3 Player Experience Targets
+
+| Player Type | Expected Progress |
+|------------|-----------------|
+| Casual (1–2 hrs/day) | Level 35 in ~2–3 weeks |
+| Regular (2–4 hrs/day) | Level 50–60 in ~3–4 weeks |
+| Hardcore (4–8 hrs/day) | Level 99 in ~6–8 weeks |
 
 ---
 
 ## 2. Core Progression Overview
-- **Primary Progression (1–35):** Evolution, power, archetype growth.
-- **Prestige Progression (36–99):** Status, rare unlocks, endgame, max prestige.
-- Level 99 = ultimate prestige with an exclusive maxed beast skin and permanent title.
+
+### 2.1 Level Structure
+- Total Levels: **1 → 99**
+- Hard Cap: **99 (no overflow XP stored)**
 
 ---
 
-## 3. XP Sources
-- Blackjack hands and win streaks
-- Daily missions and wheel
-- Feeding, toys, activities
-- Capsule completions
-- Evolutions
-- (Prestige) Competitive ranking, events, staked challenges, bet volume
+### 2.2 Progression Segments
+
+#### Stage A: Evolution Phase (Level 1–35)
+- Focus: Power growth, gameplay mechanics
+- Unlocks:
+  - Evolution tiers
+  - Core multipliers
+  - Ability systems
+- XP Requirement: **~25–30% of total XP (~500k–600k XP)**
+
+#### Stage B: Prestige Phase (Level 36–99)
+- Focus: Status, cosmetics, long-term grind
+- Unlocks:
+  - Titles
+  - Cosmetics
+  - Minor stat boosts
+  - System-wide perks
+- XP Requirement: **~70–75% (~1.4M–1.5M XP)**
+
+---
+
+### 2.3 Level-Up Handling
+
+On level-up:
+1. Add level rewards
+2. Trigger UI animation
+3. Check milestone unlock table
+4. Apply permanent modifiers
+5. Log telemetry event
+
+```json
+{
+  "event": "level_up",
+  "player_id": "...",
+  "beast_id": "...",
+  "new_level": X,
+  "total_xp": Y
+}
+```
+
+---
+
+## 3. XP Sources (Detailed Logic)
+
+### 3.1 Blackjack XP
+XP is awarded per completed hand.
+
+**Conditions:**
+- Player must place a valid bet
+- Hand must be completed (win/loss/draw all count)
+
+**Streak Bonus:**
+```
+streak_multiplier = 1 + (0.02 * current_streak)
+cap at +20% (10 streak)
+```
+
+---
+
+### 3.2 Daily Missions
+- Reset: **00:00 UTC daily**
+- Fixed XP reward (no scaling)
+
+```json
+{
+  "mission_id": "win_5_hands",
+  "xp_reward": 2500
+}
+```
+
+---
+
+### 3.3 Feeding / Activities
+
+Affects multiplier (NOT raw XP):
+
+| State   | Multiplier |
+|--------|-----------|
+| Poor   | 0.95x     |
+| Normal | 1.00x     |
+| Good   | 1.05x     |
+| Perfect| 1.10x     |
+
+**Decay:**
+```
+Every 6 hours → downgrade 1 tier
+```
+
+---
+
+### 3.4 Capsules
+
+| Type       | XP Range        |
+|-----------|----------------|
+| Common     | 500–1,000 XP   |
+| Rare       | 2,000–5,000 XP |
+| Legendary  | 10,000–25,000 XP |
+
+---
+
+### 3.5 Evolution Bonus XP
+```
+Stage 2: +5,000 XP
+Stage 3: +10,000 XP
+```
+
+---
+
+### 3.6 Prestige XP Sources (Unlocked at Level 36)
+- Ranked matches
+- Event participation
+- Staked challenges
+
+All must:
+- Use capped XP formulas
+- Be time-normalized
 
 ---
 
 ## 4. XP Formula & Wager Cap
-### 4.1. XP Formula
-- `XP = 40 + (bet/100) * multiplier`
-- Multiplier sources: evolution, feeding, items (see Section 8)
 
-### 4.2. Wager Cap
-- **Definition:** The wager cap is the maximum number of chips a player can bet in a single hand of blackjack with a specific beast. This cap directly limits the maximum XP a player can earn per hand, since XP is partially calculated based on the bet size.
-- **Per-beast:** Each beast’s cap is tracked and increased independently as it evolves.
-- **Stages:**
-  - Stage 1: 5,000 chips (base)
-  - Stage 2: 10,000 chips (+5,000)
-  - Stage 3: 20,000 chips (+10,000)
+### 4.1 Base XP Formula
+```
+XP = 40 + (bet / 100) * multiplier * streak_multiplier
+```
+
+---
+
+### 4.2 Variable Definitions
+
+| Variable | Description |
+|----------|------------|
+| bet | Chips wagered (capped) |
+| multiplier | Combined XP multiplier |
+| streak_multiplier | From win streak |
+
+---
+
+### 4.3 Wager Cap Enforcement
+```
+effective_bet = min(player_bet, beast_wager_cap)
+```
+
+---
+
+### 4.4 Example Calculation
+```
+Bet = 12,000
+Cap = 10,000
+effective_bet = 10,000
+
+XP = 40 + (10000 / 100) * 1.3 * 1.1
+XP = 183 XP
+```
 
 ---
 
 ## 5. Progression Curve & XP Table
-- **Curve:** Smooth, gentle increase, ~2M XP for 99.
-- **Level 1–35:** ~25–30% of total XP, 2–3 weeks.
-- **Level 36–99:** ~70–75% of total XP, 2 months.
-- **Full XP Table:** See `docs/XP_PER_LEVEL_TABLE.md`.
+
+### 5.1 Curve Formula
+```
+XP_to_next_level = base * (level ^ 1.35)
+base = 120
+```
 
 ---
 
-## 6. Evolution & Rewards
-- **Stages:**
-  - 1–12: Base form
-  - 13–22: Evolution stage 2
-  - 23–35: Evolution stage 3
-- **Rewards:**
-  - Increased XP multiplier (12–13% per tier, compounding)
-  - Wager cap increases
-  - Unlock/upgrade archetype abilities
-  - Beast role/skill prefixes in leaderboard display
+### 5.2 Total XP Target
+- Level 99 total ≈ **2,000,000 XP**
+
+---
+
+### 5.3 Scaling Behavior
+- Levels 1–20: fast progression
+- Levels 21–35: moderate slowdown
+- Levels 36–60: steady grind
+- Levels 61–99: heavy grind
+
+---
+
+## 6. Evolution System (Full Detail)
+
+### 6.1 Evolution Thresholds
+
+| Stage | Levels |
+|------|--------|
+| Stage 1 | 1–12 |
+| Stage 2 | 13–22 |
+| Stage 3 | 23–35 |
+
+---
+
+### 6.2 Evolution Trigger
+```
+Trigger when player_level == threshold_level
+```
+
+---
+
+### 6.3 Evolution Rewards
+
+#### Stage 2
+- Multiplier: ×1.13
+- Wager Cap: +5,000
+- Unlock ability slot
+
+#### Stage 3
+- Multiplier: ×1.28 (compounded)
+- Wager Cap: +10,000
+- Upgrade abilities
+
+---
+
+### 6.4 Archetype System
+Each beast includes:
+- Role prefix (e.g., Aggressive, Defensive)
+- Ability scaling tied to evolution stage
 
 ---
 
 ## 7. Prestige & Milestones
-- **Milestones:** Titles, cosmetics, XP boosts, player-wide rewards
-- **Per-beast vs. player-wide:**
-  - Per-beast: titles, XP multipliers, beast skins
-  - Player-wide: food, capsules, toys, mission slots, wheel spins, icons, frames
-- **Prestige-specific perks:**
-  - 35+ XP multiplier increases slowly (ex. +0.01 per level)
-  - Season pass/treasure track increases with level
-  - Cosmetics, animations, emotes, and special effects unlock
-  - Player-specific token pool or access to premium offers
-- **Milestone unlocks:**
-  - Level 40: Veteran title, consumables
-  - Level 45: Elite title, consumables
-  - Level 50: +2% XP gain, daily mission slot, wheel spin, consumables
-  - Level 55: +2% XP gain, consumables
-  - Level 60: Champion title, battle event access, consumables
-  - Level 70: Vanity badge, fast-track arena, consumables
-  - Level 80: +5% legendary drop chance, consumables
-  - Level 90: Global icon, consumables
-  - Level 99: Max Prestige skin, gallery frame, top-tier title, consumables
+
+### 7.1 Reward Types
+- Titles
+- Badges
+- Icons
+- Frames
+- Consumables
+- Functional boosts
+
+---
+
+### 7.2 Milestone Table
+
+#### Level 40
+- Title: Veteran
+- Rewards:
+  - 3× food items
+  - 1× capsule
+
+#### Level 50
+- +2% XP gain (global)
+- +1 daily mission slot
+- +1 wheel spin/day
+
+#### Level 60
+- Title: Champion
+- Unlock: Event system
+
+#### Level 70
+- Badge unlock
+- Fast-track matchmaking queue
+
+#### Level 80
+- +5% legendary drop rate
+
+#### Level 90
+- Global icon unlock
+
+#### Level 99
+- Max Prestige Skin
+- Exclusive Title
+- Animated Frame
 
 ---
 
 ## 8. XP Multiplier System
-- **Sources:** Evolution, feeding, items
-- **Stacking:** Multiplicative, capped at 2.0x
-- **Diminishing returns:** Optional, after 1.5x total multiplier
-- **Anti-abuse:** Session caps, item cooldowns, feeding decay
-- **Example:**
-  - Typical: Stage 2 (1.13x), Good Feeding (1.08x), Common XP Item (1.10x) → 1.34x
-  - Optimized: Stage 3 (1.28x), Max Feeding (1.10x), Rare XP Item (1.50x) → 2.0x (capped)
+
+### 8.1 Sources
+
+| Source | Range |
+|--------|------|
+| Evolution | 1.0 → 1.28 |
+| Feeding | 0.95 → 1.10 |
+| Items | 1.05 → 1.50 |
 
 ---
 
-## 9. Burn/Earn Balance & Fairness
-- Chips as currency vs. progress resource
-- Non-bet XP routes
-- Time-played XP
-- Anti-abuse and fairness: avoid pay-for-play abuse, active moderation, track XP/chip flow
+### 8.2 Stacking Rule
+```
+final_multiplier = evolution * feeding * item
+```
 
 ---
 
-## 10. Implementation & Balancing Notes
-- Config-driven constants
-- Telemetry and validation
-- Smoothing curve after 35
-- Table and config references
-- Start with 1–35 as core MVP; 36–99 perks can be completed incrementally
+### 8.3 Hard Cap
+```
+if final_multiplier > 2.0 → set to 2.0
+```
 
 ---
 
-## 11. UI/UX Considerations
-- Progress bars, tooltips, milestone cards
-- Clear display of evolution breakpoints and prestige milestones
+### 8.4 Diminishing Returns (Optional)
+```
+After 1.5x:
+effective_bonus = bonus * 0.5
+```
+
+---
+
+### 8.5 Anti-Abuse Systems
+
+**XP/hour soft cap:**
+```
+If XP > threshold → reduce gains by 20%
+```
+
+**Item cooldowns:**
+```
+XP boost items → 30 min cooldown
+```
+
+---
+
+## 9. Burn/Earn Balance
+
+### 9.1 Core Principle
+XP must not scale linearly with chips spent.
+
+---
+
+### 9.2 Safeguards
+- Wager cap per beast
+- Time-based XP normalization
+- Non-bet XP sources
+
+---
+
+### 9.3 Monitoring Metrics
+Track:
+- XP/hour
+- Chips spent vs XP gained
+- High-spender vs low-spender progression
+
+---
+
+## 10. Implementation Notes
+
+### 10.1 Config Example
+
+```json
+{
+  "xp_base": 40,
+  "xp_per_100_bet": 1,
+  "multiplier_cap": 2.0,
+  "wager_caps": {
+    "stage1": 5000,
+    "stage2": 10000,
+    "stage3": 20000
+  }
+}
+```
+
+---
+
+### 10.2 Required Systems
+- XP Manager
+- Multiplier Engine
+- Progression Tracker
+- Reward Distributor
+- Telemetry Logger
+
+---
+
+### 10.3 Order of Operations
+1. Apply wager cap
+2. Calculate base XP
+3. Apply multipliers
+4. Apply streak bonus
+5. Clamp values
+6. Add XP
+7. Check level-up
+
+---
+
+## 11. UI/UX Requirements
+
+### 11.1 Player Display
+- XP bar (current / next level)
+- Multiplier breakdown tooltip:
+
+```
+Base: 1.00x
+Evolution: +0.28
+Feeding: +0.10
+Item: +0.50
+Total: 1.88x
+```
+
+---
+
+### 11.2 Milestone UI
+- Pop-up card on unlock
+- Persistent “Next Milestone” tracker
+
+---
+
+### 11.3 Evolution Feedback
+- Animation
+- Sound effect
+- Stat preview
 
 ---
 
 ## 12. Appendix
-- Reference to full XP table: See `docs/XP_PER_LEVEL_TABLE.md`
-- Example calculations
+
+### 12.1 Example Full XP Flow
+```
+1. Player bets 8,000
+2. Cap = 5,000 → effective bet = 5,000
+3. Base XP = 40 + (5000 / 100) = 90
+4. Multipliers = 1.28 * 1.10 * 1.20 = 1.69
+5. Final XP = 90 * 1.69 = 152 XP
+```
 
 ---
+
+### 12.2 Future Extensions
+- Seasonal prestige resets
+- Leaderboards
+- Clan XP systems
+- Co-op multipliers
