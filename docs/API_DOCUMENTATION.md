@@ -606,6 +606,258 @@ Check daily wheel status.
 }
 ```
 
+#### GET /daily/missions
+Get today's daily missions.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "missions": [
+      {
+        "id": "uuid",
+        "type": "daily",
+        "title": "Feed Your Beast",
+        "description": "Feed your active beast 3 times",
+        "requirements": {
+          "feed_count": 3
+        },
+        "rewards": {
+          "xp": 100,
+          "luckychips": 50
+        },
+        "progress": {
+          "feed_count": 1
+        },
+        "is_completed": false,
+        "expires_at": "2024-01-02T00:00:00Z"
+      }
+    ]
+  }
+}
+```
+
+#### POST /daily/missions/{id}/claim
+Claim completed daily mission rewards.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "rewards": {
+      "xp": 100,
+      "luckychips": 50,
+      "items": []
+    }
+  }
+}
+```
+
+### Lottery
+
+#### GET /lottery/status
+Get current lottery status and jackpot.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "current_draw": {
+      "draw_date": "2024-01-01",
+      "jackpot_amount": 1500000,
+      "total_tickets": 2847,
+      "next_draw_at": "2024-01-02T00:00:00Z"
+    },
+    "last_draw": {
+      "draw_date": "2023-12-31",
+      "winning_numbers": [5, 12, 18, 23, 27, 30],
+      "jackpot_winner": "winning_user",
+      "jackpot_amount": 1200000
+    }
+  }
+}
+```
+
+#### POST /lottery/buy-ticket
+Buy lottery ticket(s).
+
+**Request Body:**
+```json
+{
+  "quantity": 1,
+  "numbers": [5, 12, 18, 23, 27, 30], // optional, random if not provided
+  "is_random": true // optional, defaults to true
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "tickets": [
+      {
+        "id": "uuid",
+        "numbers": [5, 12, 18, 23, 27, 30],
+        "is_random": false,
+        "draw_date": "2024-01-01"
+      }
+    ],
+    "total_cost": 50
+  }
+}
+```
+
+#### GET /lottery/my-tickets
+Get user's lottery tickets for current draw.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "tickets": [
+      {
+        "id": "uuid",
+        "numbers": [5, 12, 18, 23, 27, 30],
+        "is_random": false,
+        "draw_date": "2024-01-01"
+      }
+    ]
+  }
+}
+```
+
+### Crypto Wash & Black Market
+
+#### POST /crypto/wash
+Initiate crypto wash transaction (24h lock, +2.5% guaranteed).
+
+**Request Body:**
+```json
+{
+  "amount": 10000
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "transaction": {
+      "id": "uuid",
+      "amount": 10000,
+      "expected_return": 10250,
+      "unlock_at": "2024-01-02T10:00:00Z"
+    }
+  }
+}
+```
+
+#### POST /black-market/run
+Initiate black market run (24h lock, 60% +15% / 40% -15%).
+
+**Request Body:**
+```json
+{
+  "amount": 10000
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "transaction": {
+      "id": "uuid",
+      "amount": 10000,
+      "unlock_at": "2024-01-02T10:00:00Z"
+    }
+  }
+}
+```
+
+#### GET /crypto/transactions
+Get user's crypto transactions.
+
+**Query Parameters:**
+- `type` (string): wash, black_market
+- `status` (string): locked, completed
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "transactions": [
+      {
+        "id": "uuid",
+        "type": "wash",
+        "amount": 10000,
+        "expected_return": 10250,
+        "actual_return": 10250,
+        "status": "completed",
+        "locked_at": "2024-01-01T10:00:00Z",
+        "completed_at": "2024-01-02T10:00:00Z"
+      }
+    ]
+  }
+}
+```
+
+### Community Features
+
+#### GET /community/polls
+Get active community polls.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "polls": [
+      {
+        "id": "feature-vote-001",
+        "question": "What feature should we add next?",
+        "options": [
+          {"id": "slots", "text": "Slots Machine"},
+          {"id": "pvp", "text": "PvP Battles"},
+          {"id": "guilds", "text": "Guild System"}
+        ],
+        "closes_at": "2024-01-15T00:00:00Z"
+      }
+    ]
+  }
+}
+```
+
+#### POST /community/polls/{poll_id}/vote
+Vote on a community poll.
+
+**Request Body:**
+```json
+{
+  "choice": "slots"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "reward": {
+      "luckychips": 5000
+    }
+  }
+}
+```
+
 ### Leaderboards
 
 #### GET /leaderboards

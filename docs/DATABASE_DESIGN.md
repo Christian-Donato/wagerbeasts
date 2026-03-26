@@ -210,6 +210,105 @@ CREATE TABLE daily_wheel_spins (
 
 **Indexes**: user_id, spin_date
 
+### Lottery Tickets
+```sql
+CREATE TABLE lottery_tickets (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  draw_date DATE NOT NULL,
+  numbers INTEGER[] NOT NULL CHECK (array_length(numbers, 1) = 6),
+  is_random BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(user_id, draw_date, numbers)
+);
+```
+
+**Indexes**: user_id, draw_date
+
+### Lottery Draws
+```sql
+CREATE TABLE lottery_draws (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  draw_date DATE NOT NULL UNIQUE,
+  winning_numbers INTEGER[] NOT NULL CHECK (array_length(winning_numbers, 1) = 6),
+  jackpot_amount BIGINT NOT NULL,
+  total_tickets INTEGER DEFAULT 0,
+  winner_count INTEGER DEFAULT 0,
+  status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'drawn', 'completed')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  drawn_at TIMESTAMP WITH TIME ZONE
+);
+```
+
+**Indexes**: draw_date, status
+
+### Crypto Wash Transactions
+```sql
+CREATE TABLE crypto_wash_transactions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  amount BIGINT NOT NULL CHECK (amount > 0),
+  expected_return BIGINT NOT NULL, -- 102.5% of amount
+  actual_return BIGINT,
+  status VARCHAR(20) DEFAULT 'locked' CHECK (status IN ('locked', 'completed', 'failed')),
+  locked_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  unlock_at TIMESTAMP WITH TIME ZONE NOT NULL, -- 24 hours later
+  completed_at TIMESTAMP WITH TIME ZONE,
+  UNIQUE(user_id, locked_at) -- One transaction per user per lock period
+);
+```
+
+**Indexes**: user_id, status, unlock_at
+
+### Black Market Transactions
+```sql
+CREATE TABLE black_market_transactions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  amount BIGINT NOT NULL CHECK (amount > 0),
+  outcome VARCHAR(20) CHECK (outcome IN ('success', 'failure')),
+  return_multiplier DECIMAL(3,2), -- 1.15 for success, 0.85 for failure
+  actual_return BIGINT,
+  status VARCHAR(20) DEFAULT 'locked' CHECK (status IN ('locked', 'completed')),
+  locked_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  unlock_at TIMESTAMP WITH TIME ZONE NOT NULL, -- 24 hours later
+  completed_at TIMESTAMP WITH TIME ZONE,
+  UNIQUE(user_id, locked_at) -- One transaction per user per lock period
+);
+```
+
+**Indexes**: user_id, status, unlock_at, outcome
+
+### Community Votes
+```sql
+CREATE TABLE community_votes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  poll_id VARCHAR(50) NOT NULL,
+  choice VARCHAR(100) NOT NULL,
+  voted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  reward_claimed BOOLEAN DEFAULT FALSE,
+  UNIQUE(user_id, poll_id)
+);
+```
+
+**Indexes**: user_id, poll_id, voted_at
+
+### Community Polls
+```sql
+CREATE TABLE community_polls (
+  id VARCHAR(50) PRIMARY KEY,
+  question TEXT NOT NULL,
+  options JSONB NOT NULL, -- Array of option objects
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  closes_at TIMESTAMP WITH TIME ZONE,
+  results JSONB -- Vote counts per option
+);
+```
+
+**Indexes**: is_active, closes_at
+
 ## Relationships
 
 ### User → Beasts (1:N)

@@ -87,6 +87,14 @@ Security is paramount for WagerBeasts, a platform handling real-money transactio
 - **Transaction Monitoring**: Real-time blockchain analysis
 - **Cold Storage**: Majority of funds in offline storage
 
+### Gambling Security
+- **Fair Play RNG**: Cryptographically secure random number generation for blackjack and lottery
+- **Game Integrity**: Tamper-proof game logic with server-side validation
+- **Lottery Fairness**: Verifiable random draws with public audit trails
+- **Anti-Cheating**: Pattern analysis for suspicious gameplay behavior
+- **Responsible Gambling**: Age verification, self-exclusion options, deposit limits
+- **Regulatory Compliance**: Adherence to gambling regulations and licensing requirements
+
 ## Application Security
 
 ### Input Validation

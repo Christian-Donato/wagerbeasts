@@ -36,47 +36,65 @@ This development plan outlines the phased approach to building WagerBeasts, prio
 ## Phase 2: Core Gameplay MVP (Weeks 5-12)
 
 ### Goals
-- Implement the complete MVP feature set
-- Focus on retention mechanics: Beast care, Blackjack, Missions
-- Establish the compulsion loop
+- Implement the complete MVP feature set as defined in MVP Scope
+- Focus on retention mechanics: Beast care, Blackjack, Daily activities
+- Establish the compulsion loop with 25 beasts, daily wheel, lottery, and crypto features
 
 ### Deliverables
-- [ ] Beast system (creation, storage, switching)
-- [ ] Hunger and happiness mechanics
-- [ ] XP system with OSRS-style scaling
-- [ ] Blackjack game engine
-- [ ] Mission system (daily/weekly tasks)
-- [ ] Daily wheel spin
-- [ ] Shop system (food, toys, capsules)
-- [ ] Basic capsule opening (gacha mechanics)
-- [ ] Leaderboard system
-- [ ] Bestiary (collection tracking)
+- [ ] Beast system (25 beasts: 12 Common, 7 Uncommon, 4 Rare, 2 Legendary)
+- [ ] Beast evolution system (3 stages per beast, level thresholds)
+- [ ] Hunger and happiness mechanics (72h decay, XP multipliers)
+- [ ] XP system with OSRS-style scaling (level 1-99)
+- [ ] Blackjack game engine (2-to-1 payout, dealer stands on soft 17, double down/split)
+- [ ] Daily wheel spin (free daily spin, streak system, LuckyChips/food/XP prizes)
+- [ ] Lottery system (6/30 numbers, progressive jackpot, 50 chips per ticket)
+- [ ] Crypto Wash (guaranteed +2.5% return, 24h lock)
+- [ ] Black Market (60% chance +15%, 40% chance -15%, 24h lock)
+- [ ] Daily missions (3 tasks per day, mixed difficulty)
+- [ ] Shop system (Standard/Premium capsules, food items, toys)
+- [ ] Capsule opening (gacha mechanics with specific drop rates)
+- [ ] LuckyChips economy (token conversion at 2:1 ratio)
+- [ ] Global leaderboard (Total Levels, LuckyChips, Collection sorting)
+- [ ] Bestiary (complete collection tracking, 75+ creature designs)
+- [ ] Social sharing (X integration for wins/losses, official account auto-posts)
 
 ### Success Criteria
-- Complete gameplay loop functional
+- Complete MVP compulsion loop functional (Beast → Wheel → Blackjack → Missions → Lottery → Crypto features)
+- All 25 beasts implemented with proper rarity distribution
+- Daily activities working (wheel, lottery, crypto wash/market, missions)
+- LuckyChips economy fully operational with 2:1 token conversion
+- Leaderboard and bestiary systems live
+- Social sharing integration working
 - Retention metrics: Daily active users, session length
 - Technical: <500ms API response times, 99.9% uptime
 
-## Phase 3: Economy & Social Features (Weeks 13-20)
+## Phase 3: Post-MVP Expansion (Weeks 13-24)
 
 ### Goals
-- Implement LuckyChip economy
-- Add social competition elements
-- Integrate payment processing
+- Add additional casino games for variety
+- Implement PvP battle system
+- Expand social features and community building
+- Add seasonal content and events
 
 ### Deliverables
-- [ ] LuckyChip currency system
-- [ ] Shop transactions
-- [ ] Payment integration (Stripe)
-- [ ] Enhanced leaderboards (multiple sort modes)
-- [ ] Social features (friends, collection comparison)
-- [ ] Push notifications
-- [ ] Email system for important events
+- [ ] Slots machine (multiple paylines, bonus rounds)
+- [ ] Roulette (European/French variants, various bet types)
+- [ ] Poker (Texas Hold'em, tournaments)
+- [ ] PvP battle system (LuckyChip stakes, beast stats)
+- [ ] Friends list and collection comparison
+- [ ] Guild/clan system
+- [ ] Seasonal events (limited-time beasts, special rewards)
+- [ ] Achievement system (beyond daily missions)
+- [ ] Push notifications and email system
+- [ ] Mobile app (React Native)
+- [ ] Enhanced visual effects and animations
 
 ### Success Criteria
-- Monetization metrics: ARPU, conversion rates
-- Social engagement: Leaderboard participation, sharing
-- Security: PCI compliance, fraud detection
+- Expanded game variety increases session length
+- PvP system drives competitive engagement
+- Social features increase user retention
+- Seasonal events create recurring content cycles
+- Monetization metrics: ARPU growth, conversion rates
 
 ## Phase 4: Advanced Features (Weeks 21-28)
 
@@ -94,32 +112,54 @@ This development plan outlines the phased approach to building WagerBeasts, prio
 - [ ] Seasonal events framework
 - [ ] Mobile app (React Native)
 
+## Phase 4: Advanced Features & Polish (Weeks 25-32)
+
+### Goals
+- Implement advanced monetization features
+- Add blockchain integration for crypto features
+- Enhance user experience with advanced features
+- Prepare for scale with performance optimizations
+
+### Deliverables
+- [ ] Advanced monetization (subscription tiers, premium features)
+- [ ] Blockchain integration (wallet connections, smart contracts)
+- [ ] Enhanced NFT features (beast ownership, trading)
+- [ ] Advanced analytics and player behavior tracking
+- [ ] Performance optimization (caching, database tuning)
+- [ ] Advanced security features (fraud detection, KYC)
+- [ ] Multi-language support and localization
+- [ ] Advanced customer support tools
+
 ### Success Criteria
-- Engagement metrics: Session length, retention curves
-- Feature adoption: Evolution completion rates
-- Technical: Mobile app performance, cross-platform compatibility
+- Advanced monetization increases ARPU significantly
+- Blockchain features drive additional user acquisition
+- Performance optimizations handle 10x user load
+- Security measures prevent fraud and abuse
+- Global expansion readiness with localization
 
-## Phase 5: Post-MVP Expansion (Weeks 29+)
+## Phase 5: Ecosystem Expansion (Weeks 33+)
 
-### PvP & Competition
-- [ ] PvP battle system with LuckyChip stakes
-- [ ] Tournament brackets
-- [ ] Guild/clan system
+### Goals
+- Build comprehensive gaming ecosystem
+- Implement advanced social features
+- Create content creation tools
+- Establish developer platform
 
-### Additional Games
-- [ ] Slots machine
-- [ ] Roulette
-- [ ] Poker (Texas Hold'em)
+### Deliverables
+- [ ] Content creator tools (custom beasts, events)
+- [ ] Advanced PvP tournaments and leagues
+- [ ] Cross-game integration (beast sharing between games)
+- [ ] Developer API for third-party integrations
+- [ ] Advanced guild features (guild banks, wars)
+- [ ] Live streaming integration
+- [ ] Esports features and prize pools
+- [ ] Mobile game development
 
-### Blockchain Integration
-- [ ] Crypto wash feature
-- [ ] Black market trading
-- [ ] NFT beast ownership (optional)
-
-### Seasonal Content
-- [ ] Limited-time beasts
-- [ ] Seasonal events
-- [ ] Holiday-themed content
+### Success Criteria
+- Ecosystem creates network effects and virality
+- Advanced features retain power users long-term
+- Third-party integrations expand user base
+- Esports features create new revenue streams
 
 ## Technical Debt & Maintenance
 

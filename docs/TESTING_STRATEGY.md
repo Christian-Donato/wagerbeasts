@@ -38,15 +38,20 @@ A comprehensive testing strategy is essential for WagerBeasts to ensure quality,
 
 #### Unit Testing
 - **Authentication Logic**: JWT validation, password hashing
-- **Game Mechanics**: Blackjack engine, XP calculations, beast progression
-- **Business Rules**: Transaction processing, mission completion
-- **Utility Functions**: Data validation, formatting, calculations
+- **Game Mechanics**: Blackjack engine (2-to-1 payout, dealer rules), XP calculations, beast progression
+- **Economic Systems**: LuckyChips transactions, token conversion (2:1 ratio), shop purchases
+- **Daily Features**: Wheel spin logic, mission completion, lottery number generation
+- **Crypto Features**: Wash calculations (+2.5%), Black Market outcomes (60/40 probability)
+- **Lottery System**: Ticket validation, draw mechanics, jackpot calculations
+- **Business Rules**: Transaction processing, mission completion, evolution triggers
 
 #### Integration Testing
-- **API Endpoints**: CRUD operations, error handling
-- **Database Operations**: Queries, transactions, migrations
-- **External Services**: Payment processing, notification services
-- **Microservices Communication**: Inter-service API calls
+- **API Endpoints**: CRUD operations, error handling, rate limiting
+- **Database Operations**: Beast storage, transaction logging, leaderboard updates
+- **Game Sessions**: Blackjack hands, wager processing, payout calculations
+- **Daily Systems**: Wheel spins, mission resets, lottery draws
+- **Economic Flow**: Chip transactions, shop purchases, capsule openings
+- **Social Features**: Leaderboard calculations, bestiary tracking, X sharing
 
 #### End-to-End Testing
 - **User Registration**: Complete signup flow
