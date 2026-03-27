@@ -1,29 +1,162 @@
-# XP Scaling System Plan
+# XP Scaling System – Full Technical Specification
 
-## 1. Vision & Goals
-- **Vision:** Dual-stage progression (1–35: evolution, 36–99: prestige).
-- **Goals:**
-  1. Provide a compelling mid-game progression through evolution based on mechanics and growth.
-  2. Maintain long-term grind with meaningful rewards past evolution.
-  3. Avoid potential pay-to-grind exploitation by balancing XP earnings to session time and engagement.
-  4. Ensure XP progression supports both casual and dedicated players.
+---
+
+## 1. Vision & Goals (Implementation Definition)
+
+### 1.1 System Purpose
+The XP system is designed to:
+- Drive **player retention** through short-term and long-term progression loops
+- Provide **consistent reward pacing** across all session lengths
+- Ensure **fairness** regardless of spending power
+- Encourage **multi-system engagement** (blackjack, feeding, missions, etc.)
+
+---
+
+### 1.2 Design Constraints
+- XP gain must scale with **time + engagement**, NOT purely chip volume
+- High spenders must NOT gain disproportionate XP vs active players
+- All XP systems must be:
+  - Deterministic (no hidden randomness unless explicitly stated)
+  - Configurable via backend values
+  - Trackable via telemetry
+
+---
+
+### 1.3 Player Experience Targets
+
+| Player Type | Expected Progress |
+|------------|-----------------|
+| Casual (1–2 hrs/day) | Level 35 in ~2–3 weeks |
+| Regular (2–4 hrs/day) | Level 50–60 in ~3–4 weeks |
+| Hardcore (4–8 hrs/day) | Level 99 in ~6–8 weeks |
 
 ---
 
 ## 2. Core Progression Overview
-- **Primary Progression (1–35):** Evolution, power, archetype growth.
-- **Prestige Progression (36–99):** Status, rare unlocks, endgame, max prestige.
-- Level 99 = ultimate prestige with an exclusive maxed beast skin and permanent title.
+
+### 2.1 Level Structure
+- Total Levels: **1 → 99**
+- Hard Cap: **99 (no overflow XP stored)**
 
 ---
 
-## 3. XP Sources
-- Blackjack hands and win streaks
-- Daily missions and wheel
-- Feeding, toys, activities
-- Capsule completions
-- Evolutions
-- (Prestige) Competitive ranking, events, staked challenges, bet volume
+### 2.2 Progression Segments
+
+#### Stage A: Evolution Phase (Level 1–35)
+- Focus: Power growth, gameplay mechanics
+- Unlocks:
+  - Evolution tiers
+  - Core multipliers
+  - Ability systems
+- XP Requirement: **~25–30% of total XP (~500k–600k XP)**
+
+#### Stage B: Prestige Phase (Level 36–99)
+- Focus: Status, cosmetics, long-term grind
+- Unlocks:
+  - Titles
+  - Cosmetics
+  - Minor stat boosts
+  - System-wide perks
+- XP Requirement: **~70–75% (~1.4M–1.5M XP)**
+
+---
+
+### 2.3 Level-Up Handling
+
+On level-up:
+1. Add level rewards
+2. Trigger UI animation
+3. Check milestone unlock table
+4. Apply permanent modifiers
+5. Log telemetry event
+
+```json
+{
+  "event": "level_up",
+  "player_id": "...",
+  "beast_id": "...",
+  "new_level": X,
+  "total_xp": Y
+}
+```
+
+---
+
+## 3. XP Sources (Detailed Logic)
+
+### 3.1 Blackjack XP
+XP is awarded per completed hand.
+
+**Conditions:**
+- Player must place a valid bet
+- Hand must be completed (win/loss/draw all count)
+
+**Streak Bonus:**
+```
+streak_multiplier = 1 + (0.02 * current_streak)
+cap at +20% (10 streak)
+```
+
+---
+
+### 3.2 Daily Missions
+- Reset: **00:00 UTC daily**
+- Fixed XP reward (no scaling)
+
+```json
+{
+  "mission_id": "win_5_hands",
+  "xp_reward": 2500
+}
+```
+
+---
+
+### 3.3 Feeding / Activities
+
+Affects multiplier (NOT raw XP):
+
+| State   | Multiplier |
+|--------|-----------|
+| Poor   | 0.95x     |
+| Normal | 1.00x     |
+| Good   | 1.05x     |
+| Perfect| 1.10x     |
+
+**Decay:**
+```
+Every 6 hours → downgrade 1 tier
+```
+
+---
+
+### 3.4 Capsules
+
+| Type       | XP Range        |
+|-----------|----------------|
+| Common     | 500–1,000 XP   |
+| Rare       | 2,000–5,000 XP |
+| Legendary  | 10,000–25,000 XP |
+
+---
+
+### 3.5 Evolution Bonus XP
+```
+Stage 2: +5,000 XP
+Stage 3: +10,000 XP
+```
+
+---
+
+### 3.6 Prestige XP Sources (Unlocked at Level 36)
+- Ranked matches
+- Event participation
+- Staked challenges
+
+All must:
+- Use capped XP formulas
+- Be time-normalized
 
 ---
 
@@ -173,18 +306,71 @@ These values are starting points for balance testing and should be exposed as co
 
 ---
 
-## 10. Implementation & Balancing Notes
-- Config-driven constants
-- Telemetry and validation
-- Smoothing curve after 35
-- Table and config references
-- Start with 1–35 as core MVP; 36–99 perks can be completed incrementally
+## 10. Implementation Notes
+
+### 10.1 Config Example
+
+```json
+{
+  "xp_base": 40,
+  "xp_per_100_bet": 1,
+  "multiplier_cap": 2.0,
+  "wager_caps": {
+    "stage1": 5000,
+    "stage2": 10000,
+    "stage3": 20000
+  }
+}
+```
 
 ---
 
-## 11. UI/UX Considerations
-- Progress bars, tooltips, milestone cards
-- Clear display of evolution breakpoints and prestige milestones
+### 10.2 Required Systems
+- XP Manager
+- Multiplier Engine
+- Progression Tracker
+- Reward Distributor
+- Telemetry Logger
+
+---
+
+### 10.3 Order of Operations
+1. Apply wager cap
+2. Calculate base XP
+3. Apply multipliers
+4. Apply streak bonus
+5. Clamp values
+6. Add XP
+7. Check level-up
+
+---
+
+## 11. UI/UX Requirements
+
+### 11.1 Player Display
+- XP bar (current / next level)
+- Multiplier breakdown tooltip:
+
+```
+Base: 1.00x
+Evolution: +0.28
+Feeding: +0.10
+Item: +0.50
+Total: 1.88x
+```
+
+---
+
+### 11.2 Milestone UI
+- Pop-up card on unlock
+- Persistent “Next Milestone” tracker
+
+---
+
+### 11.3 Evolution Feedback
+- Animation
+- Sound effect
+- Stat preview
 
 ---
 
