@@ -1,0 +1,151 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(2, 6, 11, 0.6);
+  z-index: 1000;
+}
+
+.modal {
+  width: min(420px, 92vw);
+  background: linear-gradient(180deg, #071018 0%, #071217 100%);
+  border-radius: 16px;
+  padding: 20px 20px 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  color: #e6eef6;
+  position: relative;
+}
+
+.closeButton {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.closeX {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.header {
+  text-align: center;
+  padding-top: 6px;
+}
+
+.title {
+  font-size: 20px;
+  margin: 0 0 6px;
+  letter-spacing: 0.5px;
+}
+
+.description {
+  margin: 0;
+  font-size: 12px;
+  color: #9fb0bf;
+}
+
+.centerArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.imageWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imageFrame {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(0,255,140,0.06), rgba(0,0,0,0.18)), linear-gradient(180deg,#0b1a17,#031219);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), inset 0 2px 12px rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.image {
+  max-width: 70%;
+  max-height: 70%;
+  object-fit: contain;
+}
+
+.placeholder {
+  width: 64px;
+  height: 64px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 10px;
+}
+
+.chanceTag {
+  position: absolute;
+  right: -6px;
+  top: -6px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #00ffa2;
+  padding: 6px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 12px;
+  border: 1px solid rgba(0,255,162,0.12);
+}
+
+.breakButton {
+  margin-top: 8px;
+  width: 80%;
+  max-width: 320px;
+  height: 56px;
+  border-radius: 12px;
+  background: linear-gradient(90deg,#071217 0%,#021319 100%);
+  border: 2px solid rgba(0,255,162,0.18);
+  color: #e6eef6;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.breakLabel {
+  font-size: 16px;
+}
+
+.footerRow {
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+}
+
+.inventory {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #9fb0bf;
+}
+
+.invIcon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.95;
+}
+
+.invText {
+  font-weight: 600;
+}
