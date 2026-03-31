@@ -1,0 +1,81 @@
+:root {
+  /* Colors */
+  --color-background: #0d0e12;
+  --color-surface-container-low: #121318;
+  --color-surface-container: #18191e;
+  --color-surface-container-high: #1e1f25;
+  --color-surface-container-highest: #24252b;
+  --color-surface-bright: #2a2c32;
+  --color-on-surface: #faf8fe;
+  --color-on-surface-variant: #abaab0;
+  --color-on-surface-muted: rgba(250,248,254,0.68);
+  --color-primary: #34fea0;
+  --color-primary-strong: #0cef93;
+  --color-primary-glow: rgba(52,254,160,0.32);
+  --color-tertiary: #6ad6ff;
+  --color-tertiary-glow: rgba(106,214,255,0.28);
+  --color-secondary: #b984ff;
+  --color-secondary-glow: rgba(185,132,255,0.20);
+  --color-danger: #ff5f68;
+  --color-warning: #ffb84d;
+
+  /* Spacing (px) */
+  --space-unit: 4px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+
+  /* Radii (px) */
+  --radius-small: 8px;
+  --radius-default: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-pill: 9999px;
+
+  /* Shadows */
+  --shadow-beast-ambient: 0 20px 40px rgba(52,254,160,0.10);
+  --shadow-passive-badge: 0 0 0 1px rgba(52,254,160,0.18), 0 10px 30px rgba(52,254,160,0.12);
+  --shadow-hand-badge: 0 10px 30px rgba(52,254,160,0.30);
+  --shadow-xp-glow: 0 8px 20px rgba(106,214,255,0.18);
+
+  /* Typography */
+  --font-display: "Space Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  --font-body: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  --font-label: "Plus Jakarta Sans", system-ui;
+  --type-wordmark: 32px;
+  --type-headline-lg: 22px;
+  --type-title-lg: 22px;
+  --type-body-md: 14px;
+  --type-label-sm: 11px;
+  --type-action-label: 16px;
+  --type-hand-total: 20px;
+
+  /* Motion (ms) */
+  --motion-micro: 100ms;
+  --motion-standard: 200ms;
+  --motion-card-deal: 360ms;
+  --motion-result: 540ms;
+  --motion-beast-idle: 3000ms;
+
+  /* Z-index */
+  --z-background: 0;
+  --z-table: 10;
+  --z-dealer: 20;
+  --z-beast-aura: 30;
+  --z-beast-portrait: 40;
+  --z-player-cards: 50;
+  --z-hand-badge: 60;
+  --z-action-row: 70;
+  --z-bottom-nav: 80;
+}
+
+/* Example usage
+.card {
+  background: var(--color-on-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-beast-ambient);
+}
+*/
